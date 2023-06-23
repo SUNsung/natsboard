@@ -31,6 +31,39 @@ gnatsd -m 12345
 natsboard --nats-mon-url http://localhost:12345
 ```
 
+## Usage by linux-service
+```bash
+useradd -r -c 'NATS monitoring' nats_monitor
+nano /etc/systemd/system/nats-monitoring.service
+```
+in file: (path to natsboard: **which natsboard**)
+```
+[Unit]
+Description=NATS monitorig server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/{FULL PATH}/natsboard --nats-mon-url http://{YOUR HOST}:{YOUR PORT}
+User=nats_monitor
+Group=nats_monitor
+LimitNOFILE=65536
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Start service:
+```bash
+systemctl enable nats-monitoring --now
+```
+Status service:
+```bash
+systemctl status nats-monitoring
+```
+
 ## License
 
 Licensed under The MIT License (MIT)  
